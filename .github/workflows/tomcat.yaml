@@ -24,8 +24,6 @@ jobs:
           java-version: '17'
 
       # 3️⃣ Build the project using Maven
-      - name: Build with Maven
-        run: mvn build
       - name: validate with Maven
         run: mvn validate
       - name: compile with Maven
