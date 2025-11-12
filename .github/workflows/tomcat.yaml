@@ -1,1 +1,38 @@
 
+name: Deploy Java App to Tomcat Server
+
+on:
+  push:
+    branches:
+      - master 
+  workflow_dispatch:  # Optional: allows manual trigger from Actions tab
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout the latest code from your repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Set up Java environment (use your version)
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3️⃣ Build the project using Maven
+      - name: Build with Maven
+        run: mvn build
+      - name: validate with Maven
+        run: mvn validate
+      - name: compile with Maven
+        run: mvn compile
+      - name: test with Maven
+        run: mvn test
+      - name: package with Maven
+        run: mvn package
+        
+     
