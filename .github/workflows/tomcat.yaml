@@ -28,8 +28,6 @@ jobs:
         run: mvn validate
       - name: compile with Maven
         run: mvn compile
-      - name: test with Maven
-        run: mvn test
       - name: package with Maven
         run: mvn package
         
@@ -38,5 +36,20 @@ jobs:
                 curl -v -u ${{ secrets.TOMCAT_USER }}:${{ secrets.TOMCAT_PASSWORD }} \
                   -T target/TrainBook-1.0.0-SNAPSHOT.war \
                    "http://${{ secrets.TOMCAT_HOST }}:8080/manager/text/deploy?path=/TrainBook&update=true"
+      - name: deploy war to dev tomcat
+        run: | 
+                curl -v -u ${{ secrets.DEVTOMCAT_USER }}:${{ secrets.DEVTOMCAT_PASSWORD }} \
+                  -T target/TrainBook-1.0.0-SNAPSHOT.war \
+                   "http://${{ secrets.DEVTOMCAT_HOST }}:8080/manager/text/deploy?path=/TrainBook&update=true"
+      - name: deploy war to test tomcat
+        run: | 
+                curl -v -u ${{ secrets.TESTTOMCAT_USER }}:${{ secrets.TESTTOMCAT_PASSWORD }} \
+                  -T target/TrainBook-1.0.0-SNAPSHOT.war \
+                   "http://${{ secrets.TESTTOMCAT_HOST }}:8080/manager/text/deploy?path=/TrainBook&update=true"
+      - name: deploy war to prod tomcat
+        run: | 
+                curl -v -u ${{ secrets.PRODTOMCAT_USER }}:${{ secrets.PRODTOMCAT_PASSWORD }} \
+                  -T target/TrainBook-1.0.0-SNAPSHOT.war \
+                   "http://${{ secrets.PRODTOMCAT_HOST }}:8080/manager/text/deploy?path=/TrainBook&update=true"
         
      
