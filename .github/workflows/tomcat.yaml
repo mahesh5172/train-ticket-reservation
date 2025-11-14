@@ -1,50 +1,41 @@
-name: Build and Deploy Train Ticket Reservation
+name: Build and Deploy train-ticket-reservation
 
 on:
   push:
-    branches:
-      - master
+    branches: 
+      - main
   workflow_dispatch:
 
 jobs:
-  # --------------------------
-  # 1️⃣ Build the WAR file
-  # --------------------------
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 📥 Checkout Code
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: ☕ Set Up Java 17
+      - name: ☕ Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 17
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: 🔨 Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: 🗂 Save WAR Path
+      - name: 🗂 Find WAR file
         run: echo "WAR_FILE=$(ls target/*.war | head -n 1)" >> $GITHUB_ENV
 
-      - name: 📤 Upload WAR Artifact
+      - name: ⬆ Upload WAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: war-file
           path: ${{ env.WAR_FILE }}
 
-  # --------------------------
-  # 2️⃣ Deploy to DEV
-  # --------------------------
   deploy-dev:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
-      - name: 📥 Download WAR Artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: war-file
 
@@ -59,79 +50,3 @@ jobs:
           curl -v -u "$USER:$PASS" "$URL/list"
           curl -v -u "$USER:$PASS" --fail --show-error -T "$WAR_FILE" \
             "$URL/deploy?path=/train-ticket-reservation&update=true"
-
-  # --------------------------
-  # 3️⃣ Deploy to TEST
-  # --------------------------
-  deploy-test:
-    needs: deploy-dev
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 📥 Download WAR Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: war-file
-
-      - name: 🚀 Deploy to TEST
-        env:
-          URL: ${{ secrets.TOMCAT_URL_TEST }}
-          USER: ${{ secrets.TOMCAT_USER_TEST }}
-          PASS: ${{ secrets.TOMCAT_PASS_TEST }}
-        run: |
-          WAR_FILE=$(ls *.war | head -n 1)
-          echo "Deploying $WAR_FILE to TEST ($URL)"
-          curl -v -u "$USER:$PASS" "$URL/list"
-          curl -v -u "$USER:$PASS" --fail --show-error -T "$WAR_FILE" \
-            "$URL/deploy?path=/train-ticket-reservation&update=true"
-
-  # --------------------------
-  # 4️⃣ Deploy to PRE-PROD
-  # --------------------------
-  deploy-preprod:
-    needs: deploy-test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 📥 Download WAR Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: war-file
-
-      - name: 🚀 Deploy to PRE-PROD
-        env:
-          URL: ${{ secrets.TOMCAT_URL_PREPROD }}
-          USER: ${{ secrets.TOMCAT_USER_PREPROD }}
-          PASS: ${{ secrets.TOMCAT_PASS_PREPROD }}
-        run: |
-          WAR_FILE=$(ls *.war | head -n 1)
-          echo "Deploying $WAR_FILE to PRE-PROD ($URL)"
-          curl -v -u "$USER:$PASS" "$URL/list"
-          curl -v -u "$USER:$PASS" --fail --show-error -T "$WAR_FILE" \
-            "$URL/deploy?path=/train-ticket-reservation&update=true"
-
-  # --------------------------
-  # 5️⃣ Deploy to PROD
-  # --------------------------
-  deploy-prod:
-    needs: deploy-preprod
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 📥 Download WAR Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: war-file
-
-      - name: 🚀 Deploy to PROD
-        env:
-          URL: ${{ secrets.TOMCAT_URL_PROD }}
-          USER: ${{ secrets.TOMCAT_USER_PROD }}
-          PASS: ${{ secrets.TOMCAT_PASS_PROD }}
-        run: |
-          WAR_FILE=$(ls *.war | head -n 1)
-          echo "Deploying $WAR_FILE to PROD ($URL)"
-          curl -v -u "$USER:$PASS" "$URL/list"
-          curl -v -u "$USER:$PASS" --fail --show-error -T "$WAR_FILE" \
-            "$URL/deploy?path=/train-ticket-reservation&update=true"
-            
