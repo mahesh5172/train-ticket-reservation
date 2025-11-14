@@ -85,7 +85,7 @@ jobs:
           PASS: ${{ secrets.TOMCAT_PASS_PRE_POD }}
         run: |
          WAR_FILE=$(ls *.war | head -n 1)
-         echo "Deploying $WAR_FILE to PRE-POD ($URL)"
+         echo "Deploying $WAR_FILE to PRE_POD ($URL)"
          curl -v -u "$USER:$PASS" "$URL/list"
          curl -v -u "$USER:$PASS" --fail --show-error -T "$WAR_FILE" \
           "$URL/deploy?path=/train-ticket-reservation&update=true"
