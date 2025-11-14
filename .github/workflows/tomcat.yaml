@@ -65,6 +65,7 @@ jobs:
           PASS: ${{ secrets.TOMCAT_PASS_TEST }}
         run: |
           WAR_FILE=$(ls *.war | head -n 1)
+          echo "URL = $URL"
           echo "Deploying $WAR_FILE to TEST ($URL)"
           curl -v -u "$USER:$PASS" "$URL/list"
           curl -v -u "$USER:$PASS" --fail --show-error -T "$WAR_FILE" \
