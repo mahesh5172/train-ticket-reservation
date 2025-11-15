@@ -55,10 +55,7 @@ jobs:
         env:
          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B sonar:sonar \
-              -Dsonar.projectKey=train-ticket-reservation \
-              -Dsonar.login=${{ env.SONAR_TOKEN }} \
-              ${{ env.SONAR_HOST_URL && '-Dsonar.host.url=' + env.SONAR_HOST_URL || '' }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=train-ticket-reservation -Dsonar.projectName='train-ticket-reservation'
 
 
               
