@@ -1,0 +1,21 @@
+{
+  "family": "train-app-task",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::369759350131:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "train-app",
+      "image": "369759350131.dkr.ecr.ap-southeast-1.amazonaws.com/train-ticket:1763202450",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512"
+}
