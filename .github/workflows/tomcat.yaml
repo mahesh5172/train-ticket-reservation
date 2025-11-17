@@ -121,7 +121,7 @@ jobs:
     # 8. Deploy to EKS
       - name: Deploy to EKS
         run: |
-          kubectl set image deployment/train-ticket-deployment \
+         kubectl set image deployment/train-ticket-app \
           train-ticket-container=${{ steps.login-ecr.outputs.registry }}/train-ticket:${{ env.IMAGE_TAG }} \
           -n ${{ secrets.K8S_NAMESPACE }}
 
