@@ -1,5 +1,5 @@
 {
-  "family": "train-app-task",
+  "family": "train-app-new",
   "networkMode": "awsvpc",
   "executionRoleArn": "arn:aws:iam::369759350131:role/ecsTaskExecutionRole",
   "containerDefinitions": [
