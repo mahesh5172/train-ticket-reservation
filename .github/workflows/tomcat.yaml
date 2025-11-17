@@ -92,7 +92,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: image
-          image-ref: ${{ secrets.ECR_REPO }}:${{ env.IMAGE_TAG }}
+          image-ref: ${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
           ignore-unfixed: true
           severity: HIGH,CRITICAL
 
