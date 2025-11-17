@@ -126,9 +126,7 @@ jobs:
           train-ticket-container=${{ steps.login-ecr.outputs.registry }}/train-ticket:${{ env.IMAGE_TAG }} \
           -n ${{ secrets.K8S_NAMESPACE }}
 
-          kubectl rollout status deployment/train-ticket-deployment \
-          -n ${{ secrets.K8S_NAMESPACE }}
-
+          kubectl rollout status deployment/train-ticket-deployment -n dev --timeout=180s
 
 
   deploy-dev:
