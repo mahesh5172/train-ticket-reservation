@@ -3,8 +3,7 @@ kind: Deployment
 metadata:
   name: train-ticket-deployment
   labels:
-    app: train-ticket
-    namespace: dev  
+    app: train-ticket  
 spec:
   replicas: 2
   selector:
