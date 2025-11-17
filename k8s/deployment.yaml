@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: train-ticket-deployment
+  namespace: dev        # ✅ Add this line
   labels:
     app: train-ticket  
 spec:
