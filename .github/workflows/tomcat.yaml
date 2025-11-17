@@ -112,6 +112,11 @@ jobs:
          aws eks update-kubeconfig \
           --name ${{ secrets.EKS_CLUSTER_NAME }} \
           --region ${{ secrets.AWS_REGION }}
+          
+    # 🚀 CREATE NAMESPACE IF NOT PRESENT
+      - name: Apply namespace manifest
+        run: |
+          kubectl apply -f k8s/namespace.yaml
 
     # 8. Deploy to EKS
       - name: Deploy to EKS
