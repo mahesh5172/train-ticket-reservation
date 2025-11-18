@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: train-ticket-service
   namespace: dev
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+  
 spec:
   type: LoadBalancer          # Exposes externally (AWS ELB)
   selector:
