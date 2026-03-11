@@ -22,3 +22,13 @@ jobs:
 
       - name:  Build with Maven
         run: mvn clean package -DskipTests
+
+      - name: SonarQube Analysis
+        run: |
+         mvn sonar:sonar \
+         -Dsonar.projectKey=train-ticket-reservation \
+         -Dsonar.projectName="Train Ticket Reservation" \
+         -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+         -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+    
