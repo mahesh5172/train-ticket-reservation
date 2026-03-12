@@ -1,11 +1,11 @@
 {
   "family": "train-app-new",
   "networkMode": "awsvpc",
-  "executionRoleArn": "arn:aws:iam::369759350131:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::367398820534:role/ecsTaskExecutionRole",
   "containerDefinitions": [
     {
-      "name": "train-app",
-      "image": "369759350131.dkr.ecr.ap-southeast-1.amazonaws.com/train-ticket:1763202450",
+      "name": "new-container",
+      "image": "367398820534.dkr.ecr.us-east-1.amazonaws.com/project/train-ticket:1773304287",
       "portMappings": [
         {
           "containerPort": 8080,
