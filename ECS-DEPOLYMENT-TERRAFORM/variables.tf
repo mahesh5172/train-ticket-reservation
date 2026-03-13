@@ -27,10 +27,19 @@ variable "image_url" {
   default     = "367398820534.dkr.ecr.us-east-1.amazonaws.com/project/train-ticket:1773398197"
 }
 
-variable "sg-05add347f3ce67c0b" {
+variable "subnet_ids" {
   type = list(string)
+
+  default = [
+    "subnet-0c3565285007732d4",
+    "subnet-0ee1b0269aa4a939c"
+  ]
 }
 
-variable "subnet-0c3565285007732d4","subnet-0ee1b0269aa4a939c" {
+variable "security_group_ids" {
   type = list(string)
+
+  default = [
+    "sg-05add347f3ce67c0b"
+  ]
 }
