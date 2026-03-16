@@ -22,9 +22,9 @@ variable "container_port" {
   default = 8080
 }
 
-variable "image_url" {
-  description = "ECR Image URL"
-  default     = "367398820534.dkr.ecr.us-east-1.amazonaws.com/project/train-ticket:1773398197"
+variable "image_tag" {
+  description = "Docker image tag pushed to ECR"
+  type        = string
 }
 
 variable "subnet_ids" {
