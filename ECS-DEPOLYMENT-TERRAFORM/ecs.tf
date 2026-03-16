@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "task" {
   container_definitions = jsonencode([
     {
       name      = var.container_name
-      image     = var.image_url
+      image = "${aws_ecr_repository.train_ticket.repository_url}:${var.image_tag}"
       essential = true
 
       portMappings = [
