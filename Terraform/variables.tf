@@ -2,6 +2,11 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
+variable "image_tag" {
+  description = "Docker image tag"
+  type        = string
+}
+
 variable "cluster_name" {
   default = "train-cluster"
 }
@@ -20,11 +25,6 @@ variable "container_name" {
 
 variable "container_port" {
   default = 8080
-}
-
-variable "image_tag" {
-  description = "Docker image tag pushed to ECR"
-  type        = string
 }
 
 variable "subnet_ids" {
