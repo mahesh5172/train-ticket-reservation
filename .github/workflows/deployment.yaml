@@ -1,1 +1,174 @@
+name: CI/CD - Train Ticket Deployment
 
+on:
+  push:
+    branches:
+      - new-project
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: us-east-1
+      TF_DIR: Terraform
+
+    steps:
+    
+    # Checkout Code
+    
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+   
+    # Setup Java
+    
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 21
+
+   
+    # Build with Maven
+  
+    - name: Build Application
+      run: mvn clean package -DskipTests
+
+   
+    # SonarQube Analysis
+   
+    - name: SonarQube Scan
+      run: |
+        mvn sonar:sonar \
+        -Dsonar.projectKey=train-ticket \
+        -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+        -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+   
+    # Configure Nexus
+   
+    - name: Configure Nexus
+      run: |
+        mkdir -p ~/.m2
+        cat <<EOF > ~/.m2/settings.xml
+        <settings>
+          <servers>
+            <server>
+              <id>nexus</id>
+              <username>${{ secrets.NEXUS_USERNAME }}</username>
+              <password>${{ secrets.NEXUS_PASSWORD }}</password>
+            </server>
+          </servers>
+        </settings>
+        EOF
+
+   
+    # Upload Artifact to Nexus
+    
+    - name: Upload to Nexus
+      run: |
+        mvn deploy -DaltDeploymentRepository=nexus::default::${{ secrets.NEXUS_REPO_URL }}
+
+    
+    # Configure AWS Credentials
+   
+    - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+   
+    # Login to ECR
+    
+    - name: Login to ECR
+      uses: aws-actions/amazon-ecr-login@v2
+
+   
+    # Generate Image Tag
+   
+    - name: Generate Image Tag
+      run: echo "IMAGE_TAG=$(date +%s)" >> $GITHUB_ENV
+
+  
+    # Install Terraform
+    
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.6.6
+
+    - name: Verify Terraform Version
+      run: terraform -version
+
+   
+ 
+   # Terraform Init
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ${{ env.TF_DIR }}
+
+
+  # Terraform Validate
+
+    - name: Terraform Validate
+      run: terraform validate
+      working-directory: ${{ env.TF_DIR }}
+
+
+  # Terraform Plan
+
+    - name: Terraform Plan
+      run: |
+        terraform plan \
+        -var="image_tag=${{ env.IMAGE_TAG }}" \
+        -out=tfplan
+      working-directory: ${{ env.TF_DIR }}
+
+
+# Terraform Apply (Create Infra)
+
+    - name: Terraform Apply (Create Infra)
+      run: terraform apply -auto-approve tfplan
+      working-directory: ${{ env.TF_DIR }}
+
+   
+    # Get ECR URL
+    
+    - name: Get ECR URL
+      run: |
+        echo "ECR_URL=$(terraform output -raw ecr_repository_url)" >> $GITHUB_ENV
+      working-directory: ${{ env.TF_DIR }}
+
+    
+  
+   # Build Docker Image 
+
+    - name: Build Docker Image
+      run: |
+       docker build -t train-ticket:$IMAGE_TAG .
+
+
+  # Tag Docker Image for ECR 
+
+    - name: Tag Docker Image
+      run: |
+        docker tag train-ticket:$IMAGE_TAG $ECR_URL:$IMAGE_TAG
+
+  # Push Docker Image to ECR
+
+    - name: Push to ECR
+      run: |
+         docker push $ECR_URL:$IMAGE_TAG
+    
+    # Terraform Apply (Update ECS)
+  
+    - name: Terraform Apply (Deploy to ECS)
+      run: |
+        terraform apply -auto-approve \
+        -var="image_tag=${{ env.IMAGE_TAG }}"
+      working-directory: ${{ env.TF_DIR }}
