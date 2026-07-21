@@ -7,7 +7,6 @@
 	  <properties>
         <sonar.projectKey>train-ticket-reservation</sonar.projectKey>
         <sonar.projectName>train-ticket-reservation</sonar.projectName>
-        <sonar.host.url>${env.SONAR_HOST_URL}</sonar.host.url>
     </properties>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
